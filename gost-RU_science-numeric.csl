@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="sort-only" page-range-format="expanded" default-locale="ru-RU">
+	<info>
+		<title>gost-RU_science-numeric (numeric)</title>
+		<id>http://www.zotero.org/styles/gost-r-7-0-5-2008-numeric-modified2</id>
+		<link href="http://www.zotero.org/styles/gost-r-7-0-5-2008-numeric" rel="self"/>
+		<link href="http://protect.gost.ru/document.aspx?control=7&amp;id=173511" rel="documentation"/>
+		<author>
+			<name>Yurkin Maxim</name>
+			<email>yurkin@gmail.com</email>
+			<uri>http://sites.google.com/site/yurkin/</uri>
+		</author>
+		<contributor>
+			<name>Andrew Voynov</name>
+			<uri>https://codeberg.org/Andrew15-5</uri>
+		</contributor>
+		<contributor>
+			<name>Georg Grebenyuk </name>
+			<uri/>
+		</contributor>
+		<category citation-format="numeric"/>
+		<category field="generic-base"/>
+		<summary>Существенная доработка стиля gost-r-7-0-5-2008-numeric</summary>
+		<published>2010-03-22T10:40:00+06:00</published>
+		<updated>2025-11-06T10:23:09+00:00</updated>
+		<rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+	</info>
+	<!-- Local terms -->
+	<locale>
+		<terms>
+			<!-- В русской литературе встречается как "номер", так и "выпуск", а иногда и то, и то. При этом в Zotero есть только одно поле issue. 
+      В ГОСТ рекомендуется использовать то обозначение (№ или вып.), которое используется в самом документе. 
+      Но это сделать нереально, поэтому везде (при любом языке) используем №. -->
+			<term name="issue" form="symbol">№</term>
+		</terms>
+	</locale>
+	<locale xml:lang="en">
+		<terms>
+			<term name="online">electronic resource</term>
+			<!-- not exactly the correct term, but the most suitable one -->
+			<term name="letter" form="short">pat.</term>
+			<!-- using completely irrelevant term to localize "pat." -->
+			<term name="editor" form="verb-short">ed.</term>
+			<term name="translator" form="verb-short">trans.</term>
+			<!-- Переопределяем термин et. al, делаем его пустым (для заголовка) -->
+			<term name="et-al"/>
+		</terms>
+	</locale>
+	<locale xml:lang="ru">
+		<terms>
+			<term name="translator">перевод</term>
+			<term name="page" form="short">с.</term>
+			<term name="accessed">дата обращения</term>
+			<term name="online">электронный ресурс</term>
+			<term name="letter" form="short">пат.</term>
+			<!-- Английские варианты следующих терминов в ГОСТ не указаны, поэтому в английской локали (выше) остаются те, что есть по-умолчанию. -->
+			<term name="accessed">дата обращения</term>
+			<term name="editor" form="verb-short">под ред.</term>
+			<!-- Поскольку порядковые числительные используются только для "изд.", то достаточно одного простого определения, 
+      но в принципе это должно полностью определяться локалью, включая род терминов. -->
+			<term name="ordinal">-е</term>
+			<!-- Переопределяем термин et. al, делаем его пустым (для заголовка) -->
+			<term name="et-al"/>
+		</terms>
+	</locale>
+	<!-- Переопределение для редакторов, переводчиков -->
+	<macro name="editor-translator">
+		<names variable="editor translator" delimiter="; ">
+			<label form="verb-short" suffix=" "/>
+			<name name-as-sort-order="all" sort-separator=" " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
+		</names>
+	</macro>
+	<!-- Только первый автор без сокращения "et-al", все остальные указываются после названия, см. authors2.-->
+	<macro name="author_first">
+		<names variable="author">
+			<name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
+		</names>
+	</macro>
+  	<!-- Полное имя первого автора-->
+  <macro name="author_first_full">
+    <names variable="author">
+      <name name-as-sort-order="all" sort-separator=" " delimiter=", " delimiter-precedes-last="always" initialize="false" et-al-min="1" et-al-use-first="1"/>
+    </names>
+	</macro>
+	<!-- Перечисление всех авторов -->
+	<macro name="authors_all">
+		<names variable="author">
+			<name sort-separator=" " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
+		</names>
+	</macro>
+	<macro name="title">
+		<choose>
+			<if type="webpage post-weblog" match="any">
+				<!-- Adds "[Electronic resource]" or Russian equivalent after the title. -->
+				<text variable="title" suffix=" "/>
+				<text term="online" text-case="capitalize-first" prefix="[" suffix="]"/>
+			</if>
+			<else>
+				<text variable="title"/>
+			</else>
+		</choose>
+	</macro>
+	<macro name="edition">
+		<choose>
+			<if is-numeric="edition">
+				<group delimiter=" ">
+					<number variable="edition" form="ordinal"/>
+					<text term="edition" form="short"/>
+				</group>
+			</if>
+			<else>
+				<text variable="edition"/>
+			</else>
+		</choose>
+	</macro>
+	<!-- Специальный режим для обработки патентов. Перед именем нужно вставить "Свидетельство о государственной регистрации программы для ЭВМ" -->
+	<macro name="patent_pre_processing">
+		<choose>
+			<if type="patent">
+				<group>
+					<text variable="note"/>
+					<text variable="number" prefix=" " suffix=" Российская Федерация. "/>
+				</group>
+			</if>
+		</choose>
+	</macro>
+	<!-- Особые действия для некоторых типов-->
+	<macro name="title_post_processing">
+		<choose>
+			<!-- Нужно после названия вставить extra (со специальностью) -->
+			<if type="thesis">
+				<text variable="note" prefix=": "/>
+				<!-- Типы работы (диссертация кого) -->
+				<text variable="genre" prefix=": " suffix=" "/>
+			</if>
+			<else-if type="bill legislation">
+				<text variable="references" prefix="; " suffix=". – "/>
+				<text variable="note"/>
+			</else-if>
+			<!-- Специальный режим для обработки патентов. После заголовка будет размещена информация о заявке и принятии 
+ : № заявки : заявл. ДАТА_ЗАЯВЛЕНИЯ : опубл. (зарег.) ДАТА_РЕГИСТРАЦИИ-->
+			<else-if type="patent">
+				<group>
+					<text variable="call-number" prefix=" : № " suffix=" : "/>
+					<date variable="submitted" form="numeric" prefix="заявл. " suffix=" : ">
+						<date-part name="day"/>
+						<date-part name="month"/>
+						<date-part name="year"/>
+					</date>
+					<date variable="issued" form="numeric" prefix="опубл. (зарег.) ">
+						<date-part name="day"/>
+						<date-part name="month"/>
+						<date-part name="year"/>
+					</date>
+				</group>
+			</else-if>
+		</choose>
+	</macro>
+	<macro name="type-number">
+		<!-- Document type and number (thesis, patent, report, thesis, manuscript, ...) -->
+		<group delimiter=" ">
+					<text variable="genre"/>
+					<text variable="number"/>
+				</group>
+	</macro>
+	<macro name="container">
+		<choose>
+			<!-- Special field for short form of container title is only available for journal papers. 
+      However, Word plugin (and potentially other CSL processors) has the option to automatically abbreviate (all) container titles. 
+      In most cases (other than journal papers) that is not desirable. 
+      Unfortunately, testing for variable="container-title-short" does not help, since the above option effectively creates this variable 
+      (probably, this can be considered as a bug of CSL processor). 
+      So we use abbreviated titles (either manual or automatic) only for journal papers. -->
+			<if type="article-journal">
+				<text variable="container-title" form="short"/>
+			</if>
+			<else-if type="paper-conference">
+				<text variable="container-title" form="short"/>
+				<!-- Для материалов консференции можно указать редакторов -->
+				<text variable="note" prefix=" / "/>
+			</else-if>
+			<else>
+				<text variable="container-title"/>
+			</else>
+		</choose>
+	</macro>
+	<macro name="publisher">
+		<!-- Includes place. -->
+		<group delimiter=": ">
+			<choose>
+				<!-- Специальный режим для обработки патентов. Фраза про Заявителя-->
+				<if type="patent">
+					<text variable="publisher-place" prefix=" заявитель "/>
+				</if>
+				<!-- Специальный режим для обработки диссертаций. Только место защиты-->
+				<else-if type="thesis">
+					<text variable="publisher-place" prefix=" – "/>
+				</else-if>
+				<else>
+					<text variable="publisher-place"/>
+					<text variable="publisher"/>
+				</else>
+			</choose>
+		</group>
+	</macro>
+	<macro name="issued-year">
+		<choose>
+			<!-- Для патентов пропускаем, см. фиксацию даты в patent_post_processing -->
+			<if type="patent">
+      </if>
+			<else>
+				<date variable="issued">
+					<date-part name="year"/>
+				</date>
+			</else>
+		</choose>
+	</macro>
+	<macro name="locators">
+		<!-- Volume and issue -->
+		<group delimiter=", ">
+			<group delimiter=" ">
+				<text term="volume" form="short" text-case="capitalize-first"/>
+				<text variable="volume"/>
+			</group>
+			<group delimiter=" ">
+				<text term="issue" form="symbol"/>
+				<text variable="issue"/>
+			</group>
+		</group>
+	</macro>
+	<!-- Для статей указывает место в документе. Для диссертаций, законов отображает общее число страниц -->
+	<macro name="page">
+		<choose>
+			<if type="article-journal article article-magazine paper-conference">
+				<!-- It is assumed that fields "page" and "# of Pages" do not exist simultaneously. -->
+				<group delimiter=" ">
+					<label variable="page" form="short" text-case="capitalize-first" plural="never"/>
+					<text variable="page"/>
+				</group>
+				<group delimiter=" ">
+					<text variable="number-of-pages"/>
+					<text term="page" form="short"/>
+				</group>
+			</if>
+			<else-if type="bill legislation">
+				<group delimiter=" ">
+					<text variable="page"/>
+					<label variable="page" form="short" text-case="capitalize-first" plural="never"/>
+				</group>
+			</else-if>
+			<else-if type="book thesis">
+				<group delimiter=" ">
+					<number variable="number-of-pages"/>
+					<label variable="page" form="short" plural="never"/>
+				</group>
+			</else-if>
+		</choose>
+	</macro>
+	<macro name="access">
+		<!-- Only for webpages and post-weblogs. -->
+		<choose>
+			<if type="webpage post-weblog" match="any">
+				<choose>
+					<if variable="URL">
+						<text variable="URL" prefix="URL: "/>
+						<group prefix=" (" suffix=")" delimiter=": ">
+							<text term="accessed"/>
+							<!-- Localized date is not used here, since we prefer the Russian date style for entries of all languages. -->
+							<date variable="accessed">
+								<date-part name="day" suffix="." form="numeric-leading-zeros"/>
+								<date-part name="month" suffix="." form="numeric-leading-zeros"/>
+								<date-part name="year"/>
+							</date>
+						</group>
+					</if>
+				</choose>
+			</if>
+		</choose>
+	</macro>
+	<macro name="doi_code">
+		<!-- Только при наличии DOI -->
+		<choose>
+			<if variable="DOI" match="any">
+				<text variable="DOI" prefix="DOI: "/>
+			</if>
+		</choose>
+	</macro>
+	<macro name="language-sort">
+		<text variable="language"/>
+		<text value="Z999"/>
+	</macro>
+	<macro name="author-first">
+		<names variable="author">
+			<name delimiter-precedes-last="always" initialize-with=". " name-as-sort-order="all" sort-separator=" "/>
+			<label form="short" strip-periods="true" prefix=" " suffix="."/>
+		</names>
+	</macro>
+	<macro name="citation-number">
+		<text variable="citation-number" suffix="."/>
+	</macro>
+	<!-- Citation -->
+	<citation collapse="citation-number">
+		<sort>
+			<key variable="citation-number"/>
+		</sort>
+		<layout prefix="[" suffix="]" delimiter=", ">
+			<text variable="citation-number"/>
+			<group prefix=",">
+				<label plural="never" prefix=" " variable="locator" form="short"/>
+				<text variable="locator" form="short" prefix=" "/>
+			</group>
+		</layout>
+	</citation>
+	<!-- Bibliography -->
+	<!-- Опции "et-al..." в следующей строчке описывают требования ГОСТ, но не полностью. В ГОСТ прописано, что от 1 до 3 авторов указываются полностью и в "заголовке", 
+  т. е. в начале записи перед названием, а 4 и более сокращаются с помощью "и др." и указываются только в "сведениях об ответственности", т. е. после названия. 
+  В этом стиле я сознательно сделал выбор в пользу упрощения (авторы всегда указываются вначале), чтобы не уродовать библиографию. -->
+	<bibliography entry-spacing="0" second-field-align="flush">
+		<sort>
+			<key macro="language-sort"/>
+			<key macro="author-first"/>
+			<key variable="issued"/>
+      <key variable="title"/>
+		</sort>
+		<layout suffix=".">
+			<text macro="citation-number"/>
+      <choose>
+        <!-- Статьи из прочей периодики, статьи в рецензируемых изданиях -->
+        <if type="article article-journal">
+          <text macro="author_first" suffix=" "/>
+          <text variable="title" suffix=" / "/>
+          <text macro="authors_all" suffix=" // "/>
+          <!-- Сведения, относящиеся к заглавию -->
+          <text macro="type-number" prefix=": "/>
+          <!-- Наименование журнала -->
+          <text variable="container-title" form="short" suffix="."/>
+          <!-- Издание -->
+          <text macro="edition" prefix=" " suffix=". "/>
+          <group delimiter=" ">
+              <!-- Выходные данные -->
+              <text macro="publisher" suffix="."/>
+              <text macro="issued-year" prefix=" – " suffix="."/>
+            </group>
+            <!-- Сведения о местоположении составной части в документе или физические характеристики -->
+            <text macro="locators" prefix=" – " suffix=". "/>
+            <text macro="page" prefix=" – "/>
+            <text macro="access"/>
+            <!-- URL -->
+            <text macro="doi_code" prefix=" "/>
+        </if>
+        <else>
+              <!-- Комментарии ниже даны в соответствии с терминами, определёнными в ГОСТ. -->
+          <group delimiter="">
+            <group>
+              <group delimiter="">
+                <!-- Заголовок с указанием авторов -->
+                <text macro="authors" suffix=" "/>
+                <!-- Специальная часть заголовка для патентов -->
+                <text macro="patent_pre_processing"/>
+                <!-- Заглавие -->
+                <text macro="title" suffix=" "/>
+                <!-- Специальная часть заголовка для патентов (panent) после названия  -->
+                <text macro="patent_post_processing"/>
+                <!-- Особая обработка некоторых типов документов -->
+                <text macro="title_post_processing"/>
+                <!-- Перечисление авторов после названия по ГОСТ -->
+                <text macro="authors2" prefix="/ " suffix=" // "/>
+              </group>
+              <!-- Сведения, относящиеся к заглавию -->
+              <text macro="type-number" prefix=": "/>
+              <text macro="container" suffix=" "/>
+              <!-- Издание -->
+              <text macro="edition" prefix=" " suffix=". "/>
+              <!-- Предполагается, что редакторы и переводчики относятся к конкретному изданию, поэтому указываются после номера издания. -->
+              <text macro="editor-translator" prefix=" / "/>
+              <!-- Ответственность -->
+            </group>
+            <group delimiter=" ">
+              <!-- Выходные данные -->
+              <text macro="publisher" suffix="."/>
+              <text macro="issued-year" prefix=" – " suffix="."/>
+            </group>
+            <!-- Сведения о местоположении составной части в документе или физические характеристики -->
+            <text macro="locators" prefix=" – " suffix=". "/>
+            <text macro="page" prefix=" – "/>
+            <text macro="access"/>
+            <!-- URL -->
+            <text macro="doi_code" prefix=" "/>
+          </group>
+        </else>
+      </choose>
+		</layout>
+	</bibliography>
+</style>
