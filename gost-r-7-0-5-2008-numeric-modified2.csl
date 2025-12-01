@@ -63,6 +63,32 @@
 			<term name="et-al"/>
 		</terms>
 	</locale>
+  <!-- Только первый автор без сокращения "et-al", все остальные указываются после названия, см. authors2.-->
+	<macro name="author_first">
+		<names variable="author">
+			<name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
+		</names>
+	</macro>
+
+  <!-- Перечисление всех авторов -->
+	<macro name="authors_all">
+    <choose>
+      <!-- Полное имя первого автора для диссертаций -->
+      <if type="thesis">
+        <names variable="author">
+      <name name-as-sort-order="all" sort-separator=" " delimiter=", " delimiter-precedes-last="always" initialize="false" et-al-min="1" et-al-use-first="1"/>
+    </names>
+      </if>
+      <!-- Перечисление всех остальных авторов -->
+      <else>
+        <names variable="author">
+			    <name sort-separator=" " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
+		    </names>
+      </else>
+    </choose>  
+	
+	</macro>
+
 	<!-- Переопределение для редакторов, переводчиков -->
 	<macro name="editor-translator">
 		<names variable="editor translator" delimiter="; ">
@@ -70,24 +96,21 @@
 			<name name-as-sort-order="all" sort-separator=" " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
 		</names>
 	</macro>
-	<!-- Только первый автор без сокращения "et-al", все остальные указываются после названия, см. authors2.-->
-	<macro name="author_first">
-		<names variable="author">
-			<name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
-		</names>
-	</macro>
-  	<!-- Полное имя первого автора-->
-  <macro name="author_first_full">
-    <names variable="author">
-      <name name-as-sort-order="all" sort-separator=" " delimiter=", " delimiter-precedes-last="always" initialize="false" et-al-min="1" et-al-use-first="1"/>
-    </names>
-	</macro>
-	<!-- Перечисление всех авторов -->
-	<macro name="authors_all">
-		<names variable="author">
-			<name sort-separator=" " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
-		</names>
-	</macro>
+	
+
+    <!-- Дополнительная информация перед заголовком -->
+    <macro name="preTitle">
+      <choose>
+        <!-- Предполагается, что тип (на что выдан патент) записан в графе "Дополнительно", а страна указана после номера кроме спец. поля "Страна" -->
+        <if type="patent">
+          <group>
+            <text variable="note" suffix=" "/>
+            <text variable="number"/>
+          </group>
+        </if>
+		</choose>
+	  </macro>
+  <!-- Наименование работы. Для электронных ресурсов дополнение -->
 	<macro name="title">
 		<choose>
 			<if type="webpage post-weblog" match="any">
@@ -100,42 +123,26 @@
 			</else>
 		</choose>
 	</macro>
-	<macro name="edition">
+  <!-- Дополнительная информация после заголовка-->
+	<macro name="postTitle">
 		<choose>
-			<if is-numeric="edition">
-				<group delimiter=" ">
-					<number variable="edition" form="ordinal"/>
-					<text term="edition" form="short"/>
-				</group>
-			</if>
-			<else>
-				<text variable="edition"/>
-			</else>
-		</choose>
-	</macro>
-	<!-- Специальный режим для обработки патентов. Перед именем нужно вставить "Свидетельство о государственной регистрации программы для ЭВМ" -->
-	<macro name="patent_pre_processing">
-		<choose>
-			<if type="patent">
-				<group>
-					<text variable="note"/>
-					<text variable="number" prefix=" " suffix=" Российская Федерация. "/>
-				</group>
-			</if>
-		</choose>
-	</macro>
-	<!-- Особые действия для некоторых типов-->
-	<macro name="title_post_processing">
-		<choose>
-			<!-- Нужно после названия вставить extra (со специальностью) -->
+			<!-- Для диссертаций -->
 			<if type="thesis">
+        <!-- Специальность диссертации, предполагается что зафиксирована в "Дополнительно" -->
 				<text variable="note" prefix=": "/>
-				<!-- Типы работы (диссертация кого) -->
+				<!-- Тип работы (диссертация кого) -->
 				<text variable="genre" prefix=": " suffix=" "/>
 			</if>
+      <!-- Для законов и нормативных актов добавить сведения о принятии и утверждении -->
 			<else-if type="bill legislation">
 				<text variable="references" prefix="; " suffix=". – "/>
 				<text variable="note"/>
+			</else-if>
+      <else-if type="report manuscript">
+      	<group delimiter=" ">
+					<text variable="genre"/>
+					<text variable="number"/>
+				</group>
 			</else-if>
 			<!-- Специальный режим для обработки патентов. После заголовка будет размещена информация о заявке и принятии 
  : № заявки : заявл. ДАТА_ЗАЯВЛЕНИЯ : опубл. (зарег.) ДАТА_РЕГИСТРАЦИИ-->
@@ -156,13 +163,22 @@
 			</else-if>
 		</choose>
 	</macro>
-	<macro name="type-number">
-		<!-- Document type and number (thesis, patent, report, thesis, manuscript, ...) -->
-		<group delimiter=" ">
-					<text variable="genre"/>
-					<text variable="number"/>
+  <!-- Редакция работы (1-я, 3-я и т.д.) -->
+  <!-- Только для книг,  bookSection, словарей (dictionaryEntry), статей из справочников (encyclopediaArticle), карт (map), газетных статей (newspaperArticle) -->
+	<macro name="edition">
+		<choose>
+			<if is-numeric="edition">
+				<group delimiter=" ">
+					<number variable="edition" form="ordinal"/>
+					<text term="edition" form="short"/>
 				</group>
+			</if>
+			<else>
+				<text variable="edition"/>
+			</else>
+		</choose>
 	</macro>
+	<!-- Особые действия для некоторых типов-->
 	<macro name="container">
 		<choose>
 			<!-- Special field for short form of container title is only available for journal papers. 
@@ -190,7 +206,7 @@
 			<choose>
 				<!-- Специальный режим для обработки патентов. Фраза про Заявителя-->
 				<if type="patent">
-					<text variable="publisher-place" prefix=" заявитель "/>
+					<text variable="publisher-place" prefix="; заявитель "/>
 				</if>
 				<!-- Специальный режим для обработки диссертаций. Только место защиты-->
 				<else-if type="thesis">
@@ -257,12 +273,12 @@
 		</choose>
 	</macro>
 	<macro name="access">
-		<!-- Only for webpages and post-weblogs. -->
+		<!-- Только для веб-страниц and post-weblogs. -->
 		<choose>
 			<if type="webpage post-weblog" match="any">
 				<choose>
 					<if variable="URL">
-						<text variable="URL" prefix="URL: "/>
+						<text variable="URL" prefix=" URL: "/>
 						<group prefix=" (" suffix=")" delimiter=": ">
 							<text term="accessed"/>
 							<!-- Localized date is not used here, since we prefer the Russian date style for entries of all languages. -->
@@ -277,12 +293,29 @@
 			</if>
 		</choose>
 	</macro>
-	<macro name="doi_code">
-		<!-- Только при наличии DOI -->
+  <!-- Только для веб-страниц and post-weblogs. Информация о доступности ресурса -->
+  <macro name="rigths">
+    <choose>
+			<if type="webpage post-weblog" match="any">
+				<choose>
+					<if variable="license">
+						<text variable="license" prefix=" Режим доступа: "/>
+					</if>
+				</choose>
+			</if>
+		</choose>
+  </macro>
+  <!-- Уникальные коды публикаций -->
+	<macro name="uniqueBiblCode">
 		<choose>
+      <!-- Только при наличии DOI -->
 			<if variable="DOI" match="any">
 				<text variable="DOI" prefix="DOI: "/>
 			</if>
+      <!-- Для каких-либо иных идентификаторов -->
+      <else-if variable="references" match="any">
+        <text variable="references"/>
+      </else-if>
 		</choose>
 	</macro>
 	<macro name="language-sort">
@@ -312,9 +345,6 @@
 		</layout>
 	</citation>
 	<!-- Bibliography -->
-	<!-- Опции "et-al..." в следующей строчке описывают требования ГОСТ, но не полностью. В ГОСТ прописано, что от 1 до 3 авторов указываются полностью и в "заголовке", 
-  т. е. в начале записи перед названием, а 4 и более сокращаются с помощью "и др." и указываются только в "сведениях об ответственности", т. е. после названия. 
-  В этом стиле я сознательно сделал выбор в пользу упрощения (авторы всегда указываются вначале), чтобы не уродовать библиографию. -->
 	<bibliography entry-spacing="0" second-field-align="flush">
 		<sort>
 			<key macro="language-sort"/>
@@ -324,71 +354,27 @@
 		</sort>
 		<layout suffix=".">
 			<text macro="citation-number"/>
-      <choose>
-        <!-- Статьи из прочей периодики, статьи в рецензируемых изданиях -->
-        <if type="article article-journal">
-          <text macro="author_first" suffix=" "/>
-          <text variable="title" suffix=" / "/>
-          <text macro="authors_all" suffix=" // "/>
-          <!-- Сведения, относящиеся к заглавию -->
-          <text macro="type-number" prefix=": "/>
-          <!-- Наименование журнала -->
-          <text variable="container-title" form="short" suffix="."/>
-          <!-- Издание -->
-          <text macro="edition" prefix=" " suffix=". "/>
-          <group delimiter=" ">
-              <!-- Выходные данные -->
-              <text macro="publisher" suffix="."/>
-              <text macro="issued-year" prefix=" – " suffix="."/>
-            </group>
-            <!-- Сведения о местоположении составной части в документе или физические характеристики -->
-            <text macro="locators" prefix=" – " suffix=". "/>
-            <text macro="page" prefix=" – "/>
-            <text macro="access"/>
-            <!-- URL -->
-            <text macro="doi_code" prefix=" "/>
-        </if>
-        <else>
-              <!-- Комментарии ниже даны в соответствии с терминами, определёнными в ГОСТ. -->
-          <group delimiter="">
-            <group>
-              <group delimiter="">
-                <!-- Заголовок с указанием авторов -->
-                <text macro="authors" suffix=" "/>
-                <!-- Специальная часть заголовка для патентов -->
-                <text macro="patent_pre_processing"/>
-                <!-- Заглавие -->
-                <text macro="title" suffix=" "/>
-                <!-- Специальная часть заголовка для патентов (panent) после названия  -->
-                <text macro="patent_post_processing"/>
-                <!-- Особая обработка некоторых типов документов -->
-                <text macro="title_post_processing"/>
-                <!-- Перечисление авторов после названия по ГОСТ -->
-                <text macro="authors2" prefix="/ " suffix=" // "/>
-              </group>
-              <!-- Сведения, относящиеся к заглавию -->
-              <text macro="type-number" prefix=": "/>
-              <text macro="container" suffix=" "/>
-              <!-- Издание -->
-              <text macro="edition" prefix=" " suffix=". "/>
-              <!-- Предполагается, что редакторы и переводчики относятся к конкретному изданию, поэтому указываются после номера издания. -->
-              <text macro="editor-translator" prefix=" / "/>
-              <!-- Ответственность -->
-            </group>
-            <group delimiter=" ">
-              <!-- Выходные данные -->
-              <text macro="publisher" suffix="."/>
-              <text macro="issued-year" prefix=" – " suffix="."/>
-            </group>
-            <!-- Сведения о местоположении составной части в документе или физические характеристики -->
-            <text macro="locators" prefix=" – " suffix=". "/>
-            <text macro="page" prefix=" – "/>
-            <text macro="access"/>
-            <!-- URL -->
-            <text macro="doi_code" prefix=" "/>
-          </group>
-        </else>
-      </choose>
+      <text macro="author_first" suffix=" "/>
+      <text macro="preTitle" suffix=" "/>
+      <text variable="title"/>
+      <text macro="postTitle" suffix=" / "/>
+      <text macro="authors_all" suffix="."/>
+      <!-- Наименование журнала -->
+      <text variable="container-title" form="short" suffix="." prefix=" // "/>
+      <!-- Издание -->
+      <text macro="edition" prefix=" " suffix=". "/>
+      <group delimiter=" ">
+          <!-- Выходные данные -->
+          <text macro="publisher" suffix="."/>
+          <text macro="issued-year" prefix=" – " suffix="."/>
+        </group>
+        <!-- Сведения о местоположении составной части в документе или физические характеристики -->
+        <text macro="locators" prefix=" – " suffix=". "/>
+        <text macro="page" prefix=" – "/>
+        <text macro="access"/>
+        <text macro="rigths" prefix=". "/>
+        <!-- URL -->
+        <text macro="uniqueBiblCode" prefix=" "/>
 		</layout>
 	</bibliography>
 </style>
