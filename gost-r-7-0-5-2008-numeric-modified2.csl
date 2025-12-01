@@ -357,8 +357,8 @@
       <text macro="author_first" suffix=" "/>
       <text macro="preTitle" suffix=" "/>
       <text variable="title"/>
-      <text macro="postTitle" suffix=" / "/>
-      <text macro="authors_all" suffix="."/>
+      <text macro="postTitle" />
+      <text macro="authors_all" suffix=" " prefix=" / "/>
       <!-- Наименование журнала -->
       <text variable="container-title" form="short" suffix="." prefix=" // "/>
       <!-- Издание -->
