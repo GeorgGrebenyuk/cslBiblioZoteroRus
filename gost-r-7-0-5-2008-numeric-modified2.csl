@@ -63,11 +63,10 @@
 			<term name="et-al"/>
 		</terms>
 	</locale>
-  <!-- Только первый автор без сокращения "et-al", все остальные указываются после названия, см. authors2.-->
 	<macro name="author_first">
-		<names variable="author">
-			<name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
-		</names>
+    <names variable="author">
+			    <name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
+		    </names>
 	</macro>
 
   <!-- Перечисление всех авторов -->
@@ -318,15 +317,22 @@
       </else-if>
 		</choose>
 	</macro>
-	<macro name="language-sort">
+	<macro name="language-sort_NAVIGATION">
 		<text variable="language"/>
 		<text value="Z999"/>
 	</macro>
-	<macro name="author-first">
-		<names variable="author">
-			<name delimiter-precedes-last="always" initialize-with=". " name-as-sort-order="all" sort-separator=" "/>
-			<label form="short" strip-periods="true" prefix=" " suffix="."/>
-		</names>
+    <!-- Фамилия первого автора или иное (для сортировки библиографии только!)-->
+	<macro name="author-first_NAVIGATION">
+    <choose>
+      <if type="article-journal patent article article-magazine paper-conference" match="any">
+        <names variable="author">
+			    <name name-as-sort-order="first" initialize-with=". " et-al-min="1" et-al-use-first="1"/>
+		    </names>
+      </if>
+      <else>
+        <text variable="title"/>
+      </else>
+    </choose>
 	</macro>
 	<macro name="citation-number">
 		<text variable="citation-number" suffix="."/>
@@ -347,10 +353,10 @@
 	<!-- Bibliography -->
 	<bibliography entry-spacing="0" second-field-align="flush">
 		<sort>
-			<key macro="language-sort"/>
-			<key macro="author-first"/>
+			<key macro="language-sort_NAVIGATION"/>
+			<key macro="author-first_NAVIGATION"/>
 			<key variable="issued"/>
-      <key variable="title"/>
+      <!-- <key variable="title"/> -->
 		</sort>
 		<layout suffix=".">
 			<text macro="citation-number"/>
